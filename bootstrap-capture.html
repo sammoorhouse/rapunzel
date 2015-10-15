@@ -1,9 +1,11 @@
 <video autoplay></video>
 <canvas style="display:none;"></canvas>
+<input></input>
 
 <script>
   var video = document.querySelector('video');
   var canvas = document.querySelector('canvas');
+  var output = document.querySelector('input');
   var ctx = canvas.getContext('2d');
   var localMediaStream = null;
 
@@ -11,20 +13,20 @@
     var noPadding = arr.filter(function(a) {
       return a != 2
     });
-    console.log(arr.join(''));
-    if ((noPadding % 8) != 0) {
-      console.log("not enough data")
+    if ((noPadding.length % 8) != 0) {
     } else {
-      return fromBinaryString(arr.join(''));
+      var res = fromBinaryString(noPadding.join(''));
+      console.log(res);
+      output.value = res;
     }
   }
 
   function fromBinaryString(str) {
-    var res = '',
-      j;
+    var res = '',j=0;
     for (var i = 0; i < str.length; i = j) {
       j += 8;
-      res += String.fromCharCode(parseInt(str.slice(i, j), 2));
+      var add = String.fromCharCode(parseInt(str.slice(i, j), 2));
+      res += add
     }
     return res;
   }
@@ -47,7 +49,6 @@
   var resultArray = [];
   var push = function(data) {
     if (resultArray.slice(-1)[0] != data) {
-      console.log(data);
       resultArray.push(data);
     }
   }
@@ -56,10 +57,12 @@
 
   document.addEventListener('click', function() {
     if (receiveToken != undefined) {
+      console.log("off");
       clearInterval(receiveToken);
       receiveToken = undefined;
       processResults(resultArray);
     } else {
+      console.log("on");
       receiveToken = setInterval(function() {
         push(snapshot())
       }, 100);
