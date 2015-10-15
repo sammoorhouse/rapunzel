@@ -9,8 +9,9 @@
 
   function processResults(arr) {
     var noPadding = arr.filter(function(a) {
-      return a != 1
+      return a != 2
     });
+    console.log(arr.join(''));
     if ((noPadding % 8) != 0) {
       console.log("not enough data")
     } else {
@@ -31,7 +32,7 @@
   function snapshot() {
     if (localMediaStream) {
       ctx.drawImage(video, 0, 0);
-      var data = ctx.getImageData(50, 50, 1, 1).data;
+      var data = ctx.getImageData(100, 100, 1, 1).data;
       if ((data[0] > data[1]) && (data[0] > data[2]) && (data[0] > 240))
         return 0;
       if ((data[1] > data[0]) && (data[1] > data[2]) && data[1] > 180)
@@ -39,13 +40,14 @@
       if ((data[2] > data[0]) && (data[2] > data[1]) && data[2] > 180)
         return 2;
       else
-        return 1;
+        return 2;
     }
   }
 
   var resultArray = [];
   var push = function(data) {
     if (resultArray.slice(-1)[0] != data) {
+      console.log(data);
       resultArray.push(data);
     }
   }
@@ -56,6 +58,7 @@
     if (receiveToken != undefined) {
       clearInterval(receiveToken);
       receiveToken = undefined;
+      processResults(resultArray);
     } else {
       receiveToken = setInterval(function() {
         push(snapshot())
