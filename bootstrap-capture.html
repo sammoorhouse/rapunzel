@@ -1,8 +1,8 @@
 <head>
-    <meta charset="ascii">
+    <meta charset="utf-8">
 </head>
 <video autoplay></video>
-<canvas style="display:none;"></canvas>
+<canvas style=""></canvas>
 <input>
 
 <script>
@@ -17,6 +17,8 @@
       return a != 2
     });
     if ((noPadding.length % 8) != 0) {
+        var res = fromBinaryString(noPadding.join(''));
+        output.value = res;
     } else {
       var res = fromBinaryString(noPadding.join(''));
       output.value = res;
@@ -35,7 +37,7 @@
   }
 
   function snapshot() {
-    if (localMediaStream) {
+    if (MediaStream) {
       ctx.drawImage(video, 0, 0);
       var data = ctx.getImageData(100, 100, 1, 1).data;
       if ((data[0] > data[1]) && (data[0] > data[2]) && (data[0] > 240))
@@ -46,6 +48,8 @@
         return 2;
       else
         return 2;
+    }else{
+        console.log("couldn't find MediaStream")
     }
   }
 
@@ -120,8 +124,8 @@
       } else {
           // Avoid using this in new browsers, as it is going away.
           video.src = window.URL.createObjectURL(stream);
-          localMediaStream=stream;
       }
+          MediaStream=stream;
       video.onloadedmetadata = function(e) {
           video.play();
       };
