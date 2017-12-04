@@ -1,6 +1,9 @@
+<head>
+    <meta charset="ascii">
+</head>
 <video autoplay></video>
 <canvas style="display:none;"></canvas>
-<input></input>
+<input>
 
 <script>
   var video = document.querySelector('video');
@@ -17,6 +20,7 @@
     } else {
       var res = fromBinaryString(noPadding.join(''));
       output.value = res;
+      console.log("res ",res)
     }
   }
 
@@ -25,7 +29,8 @@
     for (var i = 0; i < str.length; i = j) {
       j += 8;
       var add = String.fromCharCode(parseInt(str.slice(i, j), 2));
-      res += add
+      res += add;
+        console.log(res)
     }
     return res;
   }
@@ -68,12 +73,70 @@
     }
   });
 
-  navigator.webkitGetUserMedia({
+
+
+
+
+
+  if (navigator.mediaDevices === undefined) {
+      navigator.mediaDevices = {};
+  }
+
+  // Some browsers partially implement mediaDevices. We can't just assign an object
+  // with getUserMedia as it would overwrite existing properties.
+  // Here, we will just add the getUserMedia property if it's missing.
+  if (navigator.mediaDevices.getUserMedia === undefined) {
+      navigator.mediaDevices.getUserMedia = function(constraints) {
+
+          // First get ahold of the legacy getUserMedia, if present
+          var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+          // Some browsers just don't implement it - return a rejected promise with an error
+          // to keep a consistent interface
+          if (!getUserMedia) {
+              return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+          }
+
+          // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+          return new Promise(function(resolve, reject) {
+              getUserMedia.call(navigator, constraints, resolve, reject);
+          });
+      }
+  }
+
+
+
+
+
+
+
+
+
+  navigator.mediaDevices.getUserMedia({
     video: true
-  }, function(stream) {
+  }).then(function(stream){
+      // Older browsers may not have srcObject
+      if ("srcObject" in video) {
+          video.srcObject = stream;
+      } else {
+          // Avoid using this in new browsers, as it is going away.
+          video.src = window.URL.createObjectURL(stream);
+          localMediaStream=stream;
+      }
+      video.onloadedmetadata = function(e) {
+          video.play();
+      };
+  }).catch(function(err) {
+      console.log(err.name + ": " + err.message);
+  });
+
+
+
+  /*
+  , function(stream) {
     video.src = window.URL.createObjectURL(stream);
     localMediaStream = stream;
   }, function(e) {
     console.log("error: " + e)
-  });
+  });*/
 </script>
