@@ -16,17 +16,14 @@
 
     function processResults(arr) {
         var noPadding = arr.filter(function (a) {
-            console.log(a);
             return a !== 2;
         });
         console.log(noPadding)
         if ((noPadding.length % 8) != 0) {
             var res = fromBinaryString(noPadding);
             proc.innerText=output.value="Sorry, couldn't decode the message.";
-            console.log(noPadding)
         } else {
             var res = fromBinaryString(noPadding.join(''));
-            console.log("res: "+ res);
             output.value = res;
             proc.innerText=res;
 
@@ -35,11 +32,9 @@
 
     function fromBinaryString(str) {
         var res = '', j = 0;
-            console.log("string: "+str);
         for (var i = 0; i < str.length; i = j) {
             j += 8;
             var add = String.fromCharCode(parseInt(str.slice(i, j), 2));
-            console.log(i, add);
             res += add;
         }
         return res;
@@ -49,7 +44,6 @@
         if (MediaStream) {
             ctx.drawImage(video, 0, 0);
             var data = ctx.getImageData(100, 100, 1, 1).data;
-            console.log("color: "+ data);
             if ((data[0] > data[1]) && (data[0] > data[2])/* && (data[0] > 240)*/)
                 return 0;
             if ((data[1] > data[0]) && (data[1] > data[2]) /*&& data[1] > 180*/)
@@ -65,7 +59,6 @@
 
     var resultArray = [];
     var push = function (data) {
-        console.log("data: "+data);
         if (resultArray.slice(-1)[0] != data) {
             resultArray.push(data);
         }
@@ -133,12 +126,4 @@
         console.log(err.name + ": " + err.message);
     });
 
-
-    /*
-    , function(stream) {
-      video.src = window.URL.createObjectURL(stream);
-      localMediaStream = stream;
-    }, function(e) {
-      console.log("error: " + e)
-    });*/
 </script>
