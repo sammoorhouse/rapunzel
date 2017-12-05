@@ -1,114 +1,108 @@
 <html>
 <head>
-    <style type="text/css">
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
+<style type="text/css">
+html, body {
+  height: 100%;
+  margin: 0;
+}
 
-        div#wrapper {
-            min-height: 100%;
-        }
+div#wrapper {
+  min-height: 100%;
+}
 
-        div#wrapper.red {
-            background-color: #f00;
-        }
+div#wrapper.red{
+  background-color: #f00;
+}
 
-        div#wrapper.green {
-            background-color: #0f0;
-        }
+div#wrapper.green{
+  background-color: #0f0;
+}
 
-        div#wrapper.blue {
-            background-color: #00f;
-        }
+div#wrapper.blue{
+  background-color: #00f;
+}
 
-    </style>
+</style>
 </head>
-<body>
-<div id="wrapper" class="blue"></div>
-<span><a class="colorLink" name="red">Red</a></span>
-<span><a class="colorLink" name="green">Green</a></span>
-<span><a class="colorLink" name="blue">Blue</a></span>
-<script language="javascript" type="text/javascript">
-    var wrapper = document.getElementById("wrapper");
+  <body>
+    <div id="wrapper" class="blue"></div>
+    <span><a class="colorLink" name="red">Red</a></span>
+    <span><a class="colorLink" name="green">Green</a></span>
+    <span><a class="colorLink" name="blue">Blue</a></span>
+    <script language="javascript">
+      var wrapper = document.getElementById("wrapper");
 
-    var sendToken = undefined;
+      var sendToken = undefined;
 
-    [].forEach.call(
+      [].forEach.call(
         document.getElementsByClassName("colorLink"),
-        function (e) {
-            e.addEventListener("click", function () {
-                if (sendToken != undefined) {
-                    clearInterval(sendToken);
-                    sendToken = undefined;
-                }
-                wrapper.className = e.name;
-            });
-        });
+        function(e) {
+          e.addEventListener("click", function(){
+            if(sendToken != undefined) {
+              clearInterval(sendToken);
+              sendToken = undefined;
+            }
+            wrapper.className = e.name
+          })
+      });
 
-    var d = 2;
-    wrapper.addEventListener("click", function () {
-        if (sendToken == undefined) {
-            sendToken = setInterval(function () {
-                d = next();
-                if (d != undefined) {
-                    switch (d) {
-                        case 0:
-                            wrapper.className = "red";
-                            console.log(d)
-                            break;
-                        case 1:
-                            console.log(d)
-                            wrapper.className = "green";
-                            break;
-                        case 2:
-                            console.log(d)
-                            wrapper.className = "blue";
-                            break;
-                    }
-                }
+      var d = 2;
+      wrapper.addEventListener("click", function(){
+        if(sendToken == undefined){
+          sendToken = setInterval(function(){
+           d = next()
+           if(d != undefined){
+             switch(d){
+               case 0:
+                 wrapper.className = "red";
+                 break;
+               case 1:
+                 wrapper.className = "green";
+                 break;
+               case 2:
+               wrapper.className = "blue";
+                 break;
+               }
+             }
             }, interval);
-        } else {
-            clearInterval(sendToken);
-            sendToken = undefined;
-        }
-    });
+       }else{
+         clearInterval(sendToken);
+         sendToken = undefined;
+       }
+     });
 
-    function toBinaryArray(str) {
+      function toBinaryArray(str){
         var PADDING = "00000000";
         var resultArray = [];
 
         for (var i = 0; i < str.length; i++) {
-            var compact = str.charCodeAt(i).toString(2);
-            var padded = Array(8 - compact.length + 1).join("0") + compact;
-            console.log("compact: " + compact);
-            console.log("padded: " + padded);
-            resultArray.push(padded.split(''));
+          var compact = str.charCodeAt(i).toString(2);
+          var padded = Array(8- compact.length+1).join("0") + compact
+
+          resultArray.push(padded.split(''));
         }
-        return res = resultArray.reduce(function (a, b) {
-            return a.concat(b);
-        }).map(function (d) {
-            return parseInt(d, 10);
-        });
-    }
+        return res = resultArray.reduce(function(a, b) {
+          return a.concat(b);
+        }).map(function(d){return parseInt(d,10)});
+      }
 
-    function dataProvider(arr) {
-        var paddedArr = arr.map(function (el) {
+      function dataProvider(arr){
+        var paddedArr = arr.map(function(el){
             return [el, 2];
-        }).reduce(function (a, b) {
+          }).reduce(function(a, b) {
             return a.concat(b);
-        });
-        return function () {
-            var f = paddedArr.shift();
-            return f;
-        };
-    }
+          });
+        return function(){
+          var f = paddedArr.shift();
+          return f;
+        }
+      }
 
-    var interval = 200;
-    var input = "Hello, World!";
-    var next = dataProvider(toBinaryArray(input));
+      var interval = 200;
+      var input = "Hello, World!"
+      var next = dataProvider(toBinaryArray(input));
 
-</script>
+    </script>
 
-</body>
+  </body>
 </html>
