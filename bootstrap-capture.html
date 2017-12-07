@@ -1,80 +1,129 @@
+<head>
+    <meta charset="utf-8">
+</head>
 <video autoplay></video>
-<canvas style="display:none;"></canvas>
-<input></input>
+<canvas style=""></canvas>
+<input>
+<p id="processed" style="color: black; font-size: 3em;">.</p>
 
-<script>
-  var video = document.querySelector('video');
-  var canvas = document.querySelector('canvas');
-  var output = document.querySelector('input');
-  var ctx = canvas.getContext('2d');
-  var localMediaStream = null;
+<script type="text/javascript">
+    var video = document.querySelector('video');
+    var canvas = document.querySelector('canvas');
+    var output = document.querySelector('input');
+    var proc = document.getElementById('processed');
+    var ctx = canvas.getContext('2d');
+    var localMediaStream = null;
 
-  function processResults(arr) {
-    var noPadding = arr.filter(function(a) {
-      return a != 2
+    function processResults(arr) {
+        var noPadding = arr.filter(function (a) {
+            return a !== 2;
+        });
+        console.log(noPadding)
+        if ((noPadding.length % 8) != 0) {
+            var res = fromBinaryString(noPadding);
+            proc.innerText=output.value="Sorry, couldn't decode the message.";
+        } else {
+            var res = fromBinaryString(noPadding.join(''));
+            output.value = res;
+            proc.innerText=res;
+
+        }
+    }
+
+    function fromBinaryString(str) {
+        var res = '', j = 0;
+        for (var i = 0; i < str.length; i = j) {
+            j += 8;
+            var add = String.fromCharCode(parseInt(str.slice(i, j), 2));
+            res += add;
+        }
+        return res;
+    }
+
+    function snapshot() {
+        if (MediaStream) {
+            ctx.drawImage(video, 0, 0);
+            var data = ctx.getImageData(100, 100, 1, 1).data;
+            if ((data[0] > data[1]) && (data[0] > data[2])/* && (data[0] > 240)*/)
+                return 0;
+            if ((data[1] > data[0]) && (data[1] > data[2]) /*&& data[1] > 180*/)
+                return 1;
+            if ((data[2] > data[0]) && (data[2] > data[1]) /*&& data[2] > 180*/)
+                return 2;
+            else
+                return 2;
+        } else {
+            console.log("couldn't find MediaStream");
+        }
+    }
+
+    var resultArray = [];
+    var push = function (data) {
+        if (resultArray.slice(-1)[0] != data) {
+            resultArray.push(data);
+        }
+    };
+
+    var receiveToken = undefined;
+
+    document.addEventListener('click', function () {
+        if (receiveToken != undefined) {
+            console.log("off");
+            clearInterval(receiveToken);
+            receiveToken = undefined;
+            processResults(resultArray);
+        } else {
+            console.log("on");
+            receiveToken = setInterval(function () {
+                push(snapshot());
+            }, 100);
+        }
     });
-    if ((noPadding.length % 8) != 0) {
-    } else {
-      var res = fromBinaryString(noPadding.join(''));
-      console.log(res);
-      output.value = res;
+
+
+    if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
     }
-  }
 
-  function fromBinaryString(str) {
-    var res = '',j=0;
-    for (var i = 0; i < str.length; i = j) {
-      j += 8;
-      var add = String.fromCharCode(parseInt(str.slice(i, j), 2));
-      res += add
+    // Some browsers partially implement mediaDevices. We can't just assign an object
+    // with getUserMedia as it would overwrite existing properties.
+    // Here, we will just add the getUserMedia property if it's missing.
+    if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function (constraints) {
+
+            // First get ahold of the legacy getUserMedia, if present
+            var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+            // Some browsers just don't implement it - return a rejected promise with an error
+            // to keep a consistent interface
+            if (!getUserMedia) {
+                return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+            }
+
+            // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+            return new Promise(function (resolve, reject) {
+                getUserMedia.call(navigator, constraints, resolve, reject);
+            });
+        };
     }
-    return res;
-  }
 
-  function snapshot() {
-    if (localMediaStream) {
-      ctx.drawImage(video, 0, 0);
-      var data = ctx.getImageData(100, 100, 1, 1).data;
-      if ((data[0] > data[1]) && (data[0] > data[2]) && (data[0] > 240))
-        return 0;
-      if ((data[1] > data[0]) && (data[1] > data[2]) && data[1] > 180)
-        return 1;
-      if ((data[2] > data[0]) && (data[2] > data[1]) && data[2] > 180)
-        return 2;
-      else
-        return 2;
-    }
-  }
 
-  var resultArray = [];
-  var push = function(data) {
-    if (resultArray.slice(-1)[0] != data) {
-      resultArray.push(data);
-    }
-  }
+    navigator.mediaDevices.getUserMedia({
+        video: true
+    }).then(function (stream) {
+        // Older browsers may not have srcObject
+        if ("srcObject" in video) {
+            video.srcObject = stream;
+        } else {
+            // Avoid using this in new browsers, as it is going away.
+            video.src = window.URL.createObjectURL(stream);
+        }
+        MediaStream = stream;
+        video.onloadedmetadata = function (e) {
+            video.play();
+        };
+    }).catch(function (err) {
+        console.log(err.name + ": " + err.message);
+    });
 
-  var receiveToken = undefined;
-
-  document.addEventListener('click', function() {
-    if (receiveToken != undefined) {
-      console.log("off");
-      clearInterval(receiveToken);
-      receiveToken = undefined;
-      processResults(resultArray);
-    } else {
-      console.log("on");
-      receiveToken = setInterval(function() {
-        push(snapshot())
-      }, 100);
-    }
-  });
-
-  navigator.webkitGetUserMedia({
-    video: true
-  }, function(stream) {
-    video.src = window.URL.createObjectURL(stream);
-    localMediaStream = stream;
-  }, function(e) {
-    console.log("error: " + e)
-  });
 </script>

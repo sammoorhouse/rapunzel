@@ -26,9 +26,9 @@ div#wrapper.blue{
 </head>
   <body>
     <div id="wrapper" class="blue"></div>
-    <span><a class="colorLink" name="red">Red</a>
-    <span><a class="colorLink" name="green">Green</a>
-    <span><a class="colorLink" name="blue">Blue</a>
+    <span><a class="colorLink" name="red">Red</a></span>
+    <span><a class="colorLink" name="green">Green</a></span>
+    <span><a class="colorLink" name="blue">Blue</a></span>
     <script language="javascript">
       var wrapper = document.getElementById("wrapper");
 
@@ -72,15 +72,12 @@ div#wrapper.blue{
      });
 
       function toBinaryArray(str){
-        console.log(str);
         var PADDING = "00000000";
         var resultArray = [];
 
         for (var i = 0; i < str.length; i++) {
           var compact = str.charCodeAt(i).toString(2);
           var padded = Array(8- compact.length+1).join("0") + compact
-          console.log("c:" + compact);
-          console.log("p:" + padded);
 
           resultArray.push(padded.split(''));
         }
@@ -90,7 +87,6 @@ div#wrapper.blue{
       }
 
       function dataProvider(arr){
-        console.log(arr.join(''));
         var paddedArr = arr.map(function(el){
             return [el, 2];
           }).reduce(function(a, b) {
