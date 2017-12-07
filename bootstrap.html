@@ -25,10 +25,10 @@ div#wrapper.blue{
 </style>
 </head>
   <body>
-    <div id="wrapper" class="green"></div>
-    <span><a class="colorLink" name="red">Red</a>
-    <span><a class="colorLink" name="green">Green</a>
-    <span><a class="colorLink" name="blue">Blue</a>
+    <div id="wrapper" class="blue"></div>
+    <span><a class="colorLink" name="red">Red</a></span>
+    <span><a class="colorLink" name="green">Green</a></span>
+    <span><a class="colorLink" name="blue">Blue</a></span>
     <script language="javascript">
       var wrapper = document.getElementById("wrapper");
 
@@ -46,6 +46,7 @@ div#wrapper.blue{
           })
       });
 
+      var d = 2;
       wrapper.addEventListener("click", function(){
         if(sendToken == undefined){
           sendToken = setInterval(function(){
@@ -77,8 +78,6 @@ div#wrapper.blue{
         for (var i = 0; i < str.length; i++) {
           var compact = str.charCodeAt(i).toString(2);
           var padded = Array(8- compact.length+1).join("0") + compact
-          console.log("c:" + compact);
-          console.log("p:" + padded);
 
           resultArray.push(padded.split(''));
         }
@@ -103,7 +102,6 @@ div#wrapper.blue{
       var input = "Hello, World!"
       var next = dataProvider(toBinaryArray(input));
 
-      var d = 1;
     </script>
 
   </body>
